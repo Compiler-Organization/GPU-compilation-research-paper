@@ -29,11 +29,17 @@ branch is a new segment in the instruction bytecode setup. Because we cannot dir
 |opcode|instruction size|mnemonic|Operand 1| Operand 2|
 |--|--|--|--|--|
 |00|4|Add|r|r|
-|01|4|Add|r|qword|
-|02|4|Cmp|r|r|
-|03|4|Cmp|r|qword|
-|04|4|Cmp|qword|qword|
-|05|4|C.Branch|r|branch number|
+|01|4|Add|r|dword|
+|02|4|Sub|r|r|
+|03|4|Sub|r|dword|
+|04|4|Mul|r|r|
+|05|4|Mul|r|dword|
+|06|4|Div|r|r|
+|07|4|Div|r|dword|
+|08|4|Cmp|r|r|
+|09|4|Cmp|r|qword|
+|0A|4|Cmp|qword|qword|
+|0B|4|C.Branch|r|branch number|
 
 # Solution problems
 * Instructions that assign variables would have to run in sequence in order to maintain control flow.
