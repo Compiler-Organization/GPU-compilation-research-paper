@@ -1,12 +1,13 @@
 # GPU-compilation-research-paper
 A research paper on compiling shaders to be used for the GPU, but with conditional branching.
 
-# Problems
+# Fundamental problems
 * Parallel execution
   * Since each "instruction" would be handled on each thread, this not allow conditional branching, variable assignment and such.
 * Mutability
   * Passing variables between threads would not be possible / it would be slow.
   * Mutable variables would not be thread safe.
+* Thread divergence
 
 # Proposed solution
 We would need an instruction set that would be executed on each seperate thread/core on the GPU, like assembly.
@@ -33,6 +34,9 @@ branch is a new segment in the instruction bytecode setup. Because we cannot dir
 |03|4|Cmp|r|qword|
 |04|4|Cmp|qword|qword|
 |05|4|C.Branch|r|branch number|
+
+# Solution problems
+* Instructions that assign variables would have to run in sequence in order to maintain control flow.
 
 ```asm
 mov eax, 10
