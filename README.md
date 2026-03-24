@@ -25,6 +25,7 @@ branch is a new segment in the instruction bytecode setup. Because we cannot dir
 ## Definitions
 * r = register
 * qword = quadruple word, 8 bytes
+* x = no function
 ## Table
 |opcode|instruction size|mnemonic|Operand 1| Operand 2|
 |--|--|--|--|--|
@@ -40,10 +41,37 @@ branch is a new segment in the instruction bytecode setup. Because we cannot dir
 |09|4|Cmp|r|qword|
 |0A|4|Cmp|qword|qword|
 |0B|4|C.Branch|r|branch number|
+|0C|4|Ret|x|x|
 
-# Solution problems
+The bytecode would be structured like so:
+```cs
+byte[] bytecode = new byte[] { 0x01, 0x00, 0x0A, 0x00, 0x03, 0x00, 0x02, 0x00, 0x0C, 0x00, 0x00, 0x00 };
+```
+In a textual representation, this would be:
+```asm
+add eax, 10 ; always starts as eax being zero
+sub eax, 2
+ret
+```
+
+To avoid thread divergence during arithmetic instructions, we'll use kronecker delta function.
+```cs
+int instructionPointer = ThreadIds.X * 4;
+int instruction = buffer[instructionPointer];
+int operand1 = buffer[instructionPointer + 1];
+int operand2 = buffer[instructionPointer + 2];
+
+returnBuffer[operand1] += (1 - Hlsl.Min(1, Hlsl.Abs(instruction - 0x01))) * operand2;
+returnBuffer[operand1] -= (1 - Hlsl.Min(1, Hlsl.Abs(instruction - 0x03))) * operand2;
+```
+
+# Problems with the solution
 * Instructions that assign variables would have to run in sequence in order to maintain control flow.
+* Thread divergence would cause a state machine / VM to run an instruction only once.
+ * This has been tested.
+* Each thread would have to iterate through every instruction.
 
+# Unrelated notes
 ```asm
 mov eax, 10
 add eax, 10
